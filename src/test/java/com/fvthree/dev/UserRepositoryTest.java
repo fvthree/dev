@@ -12,29 +12,31 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
+
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @ActiveProfiles("test")
 public class UserRepositoryTest {
 
     @Autowired
-    TestEntityManager testEntityManager;
+    private TestEntityManager testEntityManager;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Test
     public void findByUsername_whenUserFound_returnUser() {
         testEntityManager.persist(TestUtils.createUser("FirstUser"));
-        User user = userRepository.findByUsername("FirstUser");
+        User user = userRepository.findByUsername("FirstUser").get();
         assertThat(user).isNotNull();
     }
 
     @Test
     public void findByUsername_whenUserNotFound_returnNull() {
         testEntityManager.persist(TestUtils.createUser("SecondUser"));
-        User user = userRepository.findByUsername("FirstUser");
-        assertThat(user).isNull();
+        Optional<User> user = userRepository.findByUsername("FirstUser");
+        assertThat(user).isEmpty();
     }
 
 }
